@@ -3,7 +3,6 @@ package com.gopiwebdev.ecommerce.user_service.service;
 
 import com.gopiwebdev.ecommerce.user_service.entity.User;
 import com.gopiwebdev.ecommerce.user_service.repository.UserRepository;
-import com.sun.security.auth.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

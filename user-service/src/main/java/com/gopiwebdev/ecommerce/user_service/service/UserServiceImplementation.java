@@ -1,15 +1,16 @@
 package com.gopiwebdev.ecommerce.user_service.service;
 
 import com.gopiwebdev.ecommerce.user_service.dto.RegisterRequest;
+import com.gopiwebdev.ecommerce.user_service.dto.UserResponse;
 import com.gopiwebdev.ecommerce.user_service.entity.User;
 import com.gopiwebdev.ecommerce.user_service.exception.UsernameAlreadyExistsException;
 import com.gopiwebdev.ecommerce.user_service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 public class UserServiceImplementation implements UserService {
@@ -35,13 +36,19 @@ public class UserServiceImplementation implements UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setCreatedAt(LocalDateTime.now());
         userRepo.save(user);
-
-        return;
     }
 
     @Override
-    public User findByEmail(String email) {
-        return userRepo.findByEmail(email);
-    }
+    public UserResponse getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        User user = userRepo.findByUsername(username);
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setEmail(user.getEmail());
+        response.setUsername(user.getUsername());
+        response.setCreatedAt(user.getCreatedAt());
+
+        return response;
+    }
 }

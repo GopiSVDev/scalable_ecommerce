@@ -2,7 +2,7 @@ package com.gopiwebdev.ecommerce.user_service.controller;
 
 import com.gopiwebdev.ecommerce.user_service.dto.LoginRequest;
 import com.gopiwebdev.ecommerce.user_service.dto.RegisterRequest;
-import com.gopiwebdev.ecommerce.user_service.entity.User;
+import com.gopiwebdev.ecommerce.user_service.dto.UserResponse;
 import com.gopiwebdev.ecommerce.user_service.service.JwtService;
 import com.gopiwebdev.ecommerce.user_service.service.UserService;
 import jakarta.validation.Valid;
@@ -12,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -32,6 +29,12 @@ public class UserController {
 
     @Autowired
     private JwtService jwtService;
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser() {
+        UserResponse user = service.getCurrentUser();
+        return ResponseEntity.ok(user);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest request) {
@@ -54,4 +57,5 @@ public class UserController {
             return ResponseEntity.ok(token);
         } else return new ResponseEntity<>("Invalid Login", HttpStatus.BAD_REQUEST);
     }
+    
 }
