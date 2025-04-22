@@ -24,7 +24,7 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public User registerUser(RegisterRequest request) {
+    public void registerUser(RegisterRequest request) {
         if (userRepo.existsByUsername(request.getUsername())) {
             throw new UsernameAlreadyExistsException("Username already exists");
         }
@@ -34,12 +34,14 @@ public class UserServiceImplementation implements UserService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setCreatedAt(LocalDateTime.now());
+        userRepo.save(user);
 
-        return userRepo.save(user);
+        return;
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public User findByEmail(String email) {
         return userRepo.findByEmail(email);
     }
+
 }

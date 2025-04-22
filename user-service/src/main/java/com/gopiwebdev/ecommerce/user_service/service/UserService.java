@@ -6,7 +6,7 @@ import com.gopiwebdev.ecommerce.user_service.entity.User;
 import java.util.Optional;
 
 public interface UserService {
-    User registerUser(RegisterRequest request);
+    void registerUser(RegisterRequest request);
 
-    Optional<User> findByEmail(String email);
+    User findByEmail(String email);
 }
