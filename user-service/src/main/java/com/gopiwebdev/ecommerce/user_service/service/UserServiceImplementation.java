@@ -20,8 +20,9 @@ public class UserServiceImplementation implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImplementation(UserRepository userRepo) {
+    public UserServiceImplementation(UserRepository userRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
