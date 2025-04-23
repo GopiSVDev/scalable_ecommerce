@@ -1,6 +1,7 @@
 package com.gopiwebdev.ecommerce.user_service.service;
 
 import com.gopiwebdev.ecommerce.user_service.dto.RegisterRequest;
+import com.gopiwebdev.ecommerce.user_service.dto.UserResponse;
 import com.gopiwebdev.ecommerce.user_service.entity.User;
 import com.gopiwebdev.ecommerce.user_service.exception.UsernameAlreadyExistsException;
 import com.gopiwebdev.ecommerce.user_service.repository.UserRepository;
@@ -12,6 +13,11 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
