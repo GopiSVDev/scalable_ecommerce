@@ -1,14 +1,14 @@
 package com.gopiwebdev.ecommerce.product_service.repository;
 
 import com.gopiwebdev.ecommerce.product_service.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findByCategory(String category);
+    Page<Product> findByCategory(String category, Pageable pageable);
 
-    List<Product> findByTitleContaining(String title);
+    Page<Product> findByTitleContaining(String title, Pageable pageable);
 }

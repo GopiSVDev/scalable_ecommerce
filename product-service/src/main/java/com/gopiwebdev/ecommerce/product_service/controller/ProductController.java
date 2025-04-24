@@ -3,11 +3,10 @@ package com.gopiwebdev.ecommerce.product_service.controller;
 import com.gopiwebdev.ecommerce.product_service.dto.ProductDTO;
 import com.gopiwebdev.ecommerce.product_service.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
@@ -28,13 +27,20 @@ public class ProductController {
     }
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable String category) {
-        return ResponseEntity.ok(productService.getProductsByCategory(category));
+    public ResponseEntity<Page<ProductDTO>> getProductsByCategory(
+            @PathVariable String category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(productService.getProductsByCategory(category, page, size));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ProductDTO>> searchProductsByTitle(@RequestParam String title) {
-        System.out.println("Called");
-        return ResponseEntity.ok(productService.searchProductsByTitle(title));
+    public ResponseEntity<Page<ProductDTO>> searchProductsByTitle(
+            @RequestParam String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(productService.searchProductsByTitle(title, page, size));
     }
 }

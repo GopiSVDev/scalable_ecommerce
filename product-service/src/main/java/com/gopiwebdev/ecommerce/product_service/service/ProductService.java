@@ -1,6 +1,7 @@
 package com.gopiwebdev.ecommerce.product_service.service;
 
 import com.gopiwebdev.ecommerce.product_service.dto.ProductDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ public interface ProductService {
 
     ProductDTO getProductById(Long id);
 
-    List<ProductDTO> getProductsByCategory(String category);
+    Page<ProductDTO> getProductsByCategory(String category, int page, int size);
 
-    List<ProductDTO> searchProductsByTitle(String title);
+    Page<ProductDTO> searchProductsByTitle(String title, int page, int size);
 }

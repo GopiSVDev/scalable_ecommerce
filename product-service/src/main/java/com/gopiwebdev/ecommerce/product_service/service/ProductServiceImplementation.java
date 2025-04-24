@@ -5,6 +5,9 @@ import com.gopiwebdev.ecommerce.product_service.entity.Product;
 import com.gopiwebdev.ecommerce.product_service.exception.ProductNotFoundException;
 import com.gopiwebdev.ecommerce.product_service.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -48,19 +51,17 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
-    public List<ProductDTO> getProductsByCategory(String category) {
-        List<Product> products = repository.findByCategory(category);
+    public Page<ProductDTO> getProductsByCategory(String category, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = repository.findByCategory(category, pageable);
 
-        List<ProductDTO> productDTOs = products.stream()
-                .map(ProductDTO::new)
-                .toList();
-
-        return productDTOs;
+        return productPage.map(ProductDTO::new);
     }
 
     @Override
-    public List<ProductDTO> searchProductsByTitle(String title) {
-        List<Product> products = repository.findByTitleContaining(title);
-        return products.stream().map(ProductDTO::new).toList();
+    public Page<ProductDTO> searchProductsByTitle(String title, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = repository.findByTitleContaining(title, pageable);
+        return productPage.map(ProductDTO::new);
     }
 }
