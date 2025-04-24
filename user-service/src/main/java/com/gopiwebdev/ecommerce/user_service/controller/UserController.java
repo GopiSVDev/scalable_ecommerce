@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
     @Autowired
     public UserService service;
@@ -57,5 +57,5 @@ public class UserController {
             return ResponseEntity.ok(token);
         } else return new ResponseEntity<>("Invalid Login", HttpStatus.BAD_REQUEST);
     }
-    
+
 }

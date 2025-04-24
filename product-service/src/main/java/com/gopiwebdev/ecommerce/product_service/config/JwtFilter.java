@@ -1,6 +1,6 @@
-package com.gopiwebdev.ecommerce.user_service.config;
+package com.gopiwebdev.ecommerce.product_service.config;
 
-import com.gopiwebdev.ecommerce.user_service.service.JwtService;
+import com.gopiwebdev.ecommerce.product_service.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        if (path.equals("/api/users/register") || path.equals("/api/users/login")) {
+        if (path.equals("/users/register") || path.equals("/users/login")) {
             filterChain.doFilter(request, response);
             return;
         }
