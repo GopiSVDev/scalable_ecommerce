@@ -1,5 +1,6 @@
 package com.gopiwebdev.ecommerce.cart_service.controller;
 
+import com.gopiwebdev.ecommerce.cart_service.dto.CartItemResponse;
 import com.gopiwebdev.ecommerce.cart_service.entity.CartItem;
 import com.gopiwebdev.ecommerce.cart_service.exception.CartItemNotFoundException;
 import com.gopiwebdev.ecommerce.cart_service.service.CartService;
@@ -24,8 +25,8 @@ public class CartController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<CartItem>> getCartItems(@PathVariable Long userId) {
-        List<CartItem> items = cartService.getCartItems(userId);
+    public ResponseEntity<List<CartItemResponse>> getCartItems(@PathVariable Long userId) {
+        List<CartItemResponse> items = cartService.getCartItems(userId);
         return ResponseEntity.ok(items);
     }
 
