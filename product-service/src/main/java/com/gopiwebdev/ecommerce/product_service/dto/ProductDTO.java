@@ -27,7 +27,7 @@ public class ProductDTO {
         this.id = product.getId();
         this.title = product.getTitle();
         this.price = product.getPrice();
-        this.discountPercentage = product.getDiscountPercentage();
+        this.discountPercentage = (product.getDiscountPercentage() != null) ? product.getDiscountPercentage() : 0.0;
         this.category = product.getCategory();
         this.description = product.getDescription();
         this.rating = product.getRating();

@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -23,21 +24,37 @@ public class JWTAuthenticationFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        // Extract JWT from the Authorization header
+
+        String path = exchange.getRequest().getURI().getPath();
+        HttpMethod method = exchange.getRequest().getMethod();
+
+        if (path.equals("/api/users/login") || path.equals("/api/users/register")) {
+            return chain.filter(exchange);
+        }
+
+        if (path.equals("/api/products/create") && method.equals(HttpMethod.POST)) {
+            return authenticateRequest(exchange, chain);
+        }
+
+        if (path.startsWith("/api/users/") || path.startsWith("/api/cart/")) {
+            return authenticateRequest(exchange, chain);
+        }
+
+        return chain.filter(exchange);
+    }
+
+    private Mono<Void> authenticateRequest(ServerWebExchange exchange, WebFilterChain chain) {
         String token = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
         if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7); // Remove "Bearer " prefix
+            token = token.substring(7);
             if (validateToken(token)) {
-                // Forward the valid token to the backend service
                 exchange.getRequest().mutate().header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build();
             } else {
-                // Handle invalid token (e.g., 401 Unauthorized)
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
         } else {
-            // If no token is provided, you can reject the request or forward without JWT
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
@@ -57,5 +74,4 @@ public class JWTAuthenticationFilter implements WebFilter {
             return false;
         }
     }
-
 }
