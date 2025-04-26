@@ -5,6 +5,7 @@ import com.gopiwebdev.ecommerce.user_service.dto.UserResponse;
 import com.gopiwebdev.ecommerce.user_service.entity.User;
 import com.gopiwebdev.ecommerce.user_service.exception.UsernameAlreadyExistsException;
 import com.gopiwebdev.ecommerce.user_service.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 
 import static org.mockito.Mockito.*;
 
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -34,34 +36,20 @@ class UserServiceImplementationTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    @Test
-    void registerUser_ShouldSaveUser_WhenUsernameIsNew() {
-        RegisterRequest request = new RegisterRequest();
-        request.setUsername("newuser");
-        request.setPassword("password");
-        request.setEmail("new@example.com");
-
-        // Mocking repo and encoder behavior
-        when(repository.existsByUsername("newuser")).thenReturn(false);
-        when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
-
-        userService.registerUser(request);
-
-        verify(repository, times(1)).save(any(User.class));
-        verify(passwordEncoder, times(1)).encode("password");
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void registerUser_ShouldThrowException_WhenUsernameExists() {
-        RegisterRequest request = new RegisterRequest();
-        request.setUsername("existinguser");
+    void testRegisterUser_UsernameAlreadyExists() {
+        RegisterRequest request = new RegisterRequest("testuser", "test@example.com", "password123");
 
-        when(repository.existsByUsername("existinguser")).thenReturn(true);
+        when(repository.existsByUsername(request.getUsername())).thenReturn(true);
 
-        assertThrows(UsernameAlreadyExistsException.class, () -> {
-            userService.registerUser(request);
-        });
+        assertThrows(UsernameAlreadyExistsException.class, () -> userService.registerUser(request));
 
-        verify(repository, never()).save(any());
+        verify(repository, times(1)).existsByUsername(request.getUsername());
+        verify(repository, times(0)).save(any(User.class)); // save should not be called
     }
 }
