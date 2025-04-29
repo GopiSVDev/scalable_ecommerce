@@ -1,6 +1,7 @@
 package com.gopiwebdev.ecommerce.user_service.service;
 
 import com.gopiwebdev.ecommerce.user_service.dto.RegisterRequest;
+import com.gopiwebdev.ecommerce.user_service.dto.UserResponse;
 import com.gopiwebdev.ecommerce.user_service.entity.User;
 import com.gopiwebdev.ecommerce.user_service.exception.UsernameAlreadyExistsException;
 import com.gopiwebdev.ecommerce.user_service.repository.UserRepository;
@@ -13,7 +14,12 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -61,5 +67,32 @@ class UserServiceImplementationTest {
         assertEquals("encodedPassword", savedUser.getPassword());
 
         verify(passwordEncoder, times(1)).encode(request.getPassword());
+    }
+
+    @Test
+    void testGetCurrentUser_Success() {
+        String mockUsername = "testuser";
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(mockUsername);
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setEmail("test@example.com");
+        mockUser.setUsername(mockUsername);
+        mockUser.setCreatedAt(LocalDateTime.now());
+
+        when(repository.findByUsername(mockUser.getUsername())).thenReturn(mockUser);
+
+        UserResponse response = userService.getCurrentUser();
+
+        assertEquals(mockUser.getId(), response.getId());
+        assertEquals(mockUser.getEmail(), response.getEmail());
+        assertEquals(mockUser.getUsername(), response.getUsername());
+
+        verify(repository).findByUsername(mockUsername);
     }
 }
