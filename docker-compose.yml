@@ -1,0 +1,83 @@
+services:
+
+# Postgres db for userdata
+  postgres-user:
+    image: postgres:15
+    container_name: postgres_user
+    environment:
+      - POSTGRES_DB=userDB
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+    volumes:
+      - pgdata-user:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}"]
+      interval: 5s
+      retries: 10 
+      start_period: 10s
+      timeout: 5s 
+
+# Postgres db for product data
+  postgres-product:
+    image: postgres:15
+    container_name: postgres_product
+    environment:
+      - POSTGRES_DB=productsDB
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+    volumes:
+      - pgdata-product:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}"]
+      interval: 5s
+      retries: 10 
+      start_period: 10s
+      timeout: 5s 
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    image: user-service
+    container_name: user-service
+    depends_on:
+      - postgres-user
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_URL=jdbc:postgresql://postgres-user:5432/userDB
+      - jwt.secret=${JWT_SECRET}
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+
+  product-service:
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    image: product-service
+    container_name: product-service
+    depends_on:
+      - postgres-product
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_URL=jdbc:postgresql://postgres-product:5432/productsDB
+      - jwt.secret=${JWT_SECRET}
+    ports:
+      - "8081:8081"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  pgdata-user:
+  pgdata-product:
