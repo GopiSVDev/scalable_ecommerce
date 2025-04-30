@@ -1,0 +1,21 @@
+# Ignore Maven output
+target/
+
+# Ignore Git files
+.git
+.gitignore
+
+# Ignore IDE config files
+.idea/
+*.iml
+*.log
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore test reports or temp files
+test-output/
+tmp/
+*.swp
+*.bak
