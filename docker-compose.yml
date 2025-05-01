@@ -14,6 +14,8 @@ services:
       - pgdata-user:/var/lib/postgresql/data
     networks:
       - backend
+    env_file:
+      - .env
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "${DB_USER}" ]
       interval: 5s
@@ -35,6 +37,30 @@ services:
       - pgdata-product:/var/lib/postgresql/data
     networks:
       - backend
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${DB_USER}" ]
+      interval: 5s
+      retries: 10
+      start_period: 10s
+      timeout: 5s
+
+  postgres-cart:
+    image: postgres:15
+    container_name: postgres_cart
+    environment:
+      - POSTGRES_DB=cartDB
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata-cart:/var/lib/postgresql/data
+    networks:
+      - backend
+    env_file:
+      - .env
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "${DB_USER}" ]
       interval: 5s
@@ -59,6 +85,8 @@ services:
       - "8080:8080"
     networks:
       - backend
+    env_file:
+      - .env
 
   product-service:
     build:
@@ -77,6 +105,52 @@ services:
       - "8081:8081"
     networks:
       - backend
+    env_file:
+      - .env
+
+  cart-service:
+    build:
+      context: ./cart-service
+      dockerfile: Dockerfile
+    image: cart-service
+    container_name: cart-service
+    depends_on:
+      - postgres-cart
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_URL=jdbc:postgresql://postgres-cart:5432/cartDB
+      - jwt.secret=${JWT_SECRET}
+    ports:
+      - "8082:8082"
+    networks:
+      - backend
+    env_file:
+      - .env
+
+  service-registry:
+    build:
+      context: ./service-registry
+      dockerfile: Dockerfile
+    image: service-registry
+    container_name: service-registry
+    ports:
+      - "8761:8761"
+    networks:
+      - backend
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    image: api-gateway
+    container_name: api-gateway
+    ports:
+      - "8090:8090"
+    networks:
+      - backend
+    env_file:
+      - .env
 
 networks:
   backend:
@@ -85,3 +159,4 @@ networks:
 volumes:
   pgdata-user:
   pgdata-product:
+  pgdata-cart:
