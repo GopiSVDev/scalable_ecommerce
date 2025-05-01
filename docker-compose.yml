@@ -1,6 +1,6 @@
 services:
 
-# Postgres db for userdata
+  # Postgres db for userdata
   postgres-user:
     image: postgres:15
     container_name: postgres_user
@@ -8,18 +8,20 @@ services:
       - POSTGRES_DB=userDB
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
+    ports:
+      - "5432:5432"
     volumes:
       - pgdata-user:/var/lib/postgresql/data
     networks:
       - backend
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${DB_USER}"]
+      test: [ "CMD", "pg_isready", "-U", "${DB_USER}" ]
       interval: 5s
-      retries: 10 
+      retries: 10
       start_period: 10s
-      timeout: 5s 
+      timeout: 5s
 
-# Postgres db for product data
+  # Postgres db for product data
   postgres-product:
     image: postgres:15
     container_name: postgres_product
@@ -27,16 +29,18 @@ services:
       - POSTGRES_DB=productsDB
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
+    ports:
+      - "5433:5432"
     volumes:
       - pgdata-product:/var/lib/postgresql/data
     networks:
       - backend
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${DB_USER}"]
+      test: [ "CMD", "pg_isready", "-U", "${DB_USER}" ]
       interval: 5s
-      retries: 10 
+      retries: 10
       start_period: 10s
-      timeout: 5s 
+      timeout: 5s
 
   user-service:
     build:
