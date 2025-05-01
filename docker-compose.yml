@@ -46,6 +46,7 @@ services:
       start_period: 10s
       timeout: 5s
 
+  # Postgres db for cart data
   postgres-cart:
     image: postgres:15
     container_name: postgres_cart
@@ -68,6 +69,7 @@ services:
       start_period: 10s
       timeout: 5s
 
+  # Service for user
   user-service:
     build:
       context: ./user-service
@@ -88,6 +90,7 @@ services:
     env_file:
       - .env
 
+  # Service for product
   product-service:
     build:
       context: ./product-service
@@ -108,6 +111,7 @@ services:
     env_file:
       - .env
 
+  # Service for cart
   cart-service:
     build:
       context: ./cart-service
@@ -128,6 +132,7 @@ services:
     env_file:
       - .env
 
+  # Service for Service Registry (Eureka)
   service-registry:
     build:
       context: ./service-registry
@@ -139,6 +144,7 @@ services:
     networks:
       - backend
 
+  # Service for API Gateway
   api-gateway:
     build:
       context: ./api-gateway
