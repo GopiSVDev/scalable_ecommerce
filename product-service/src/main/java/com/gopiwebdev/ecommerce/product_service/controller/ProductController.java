@@ -5,6 +5,7 @@ import com.gopiwebdev.ecommerce.product_service.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,9 @@ public class ProductController {
     private ProductService productService;
 
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+
+    @Value("${server.port}")
+    private int serverPort;
 
     @PostMapping("/create")
     public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO dto) {
@@ -35,13 +39,12 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
-        logger.info("Received request to get product by ID: {}", id);
+        logger.info("Request handled by instance: {}", serverPort);
+
         try {
             ProductDTO product = productService.getProductById(id);
-            logger.info("Product retrieved successfully: {}", product);
             return ResponseEntity.ok(product);
         } catch (Exception e) {
-            logger.error("Error retrieving product with ID {}: {}", id, e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
@@ -52,13 +55,11 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        logger.info("Received request to get products by category: {}, page: {}, size: {}", category, page, size);
+
         try {
-            logger.info("Retrieved products for category {} successfully", category);
             Page<ProductDTO> products = productService.getProductsByCategory(category, page, size);
             return ResponseEntity.ok(products);
         } catch (Exception e) {
-            logger.error("Error retrieving products for category {}: {}", category, e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -69,13 +70,11 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        logger.info("Received request to search products by title: '{}', page: {}, size: {}", title, page, size);
+
         try {
             Page<ProductDTO> products = productService.searchProductsByTitle(title, page, size);
-            logger.info("Search results for title '{}' returned successfully", title);
             return ResponseEntity.ok(products);
         } catch (Exception e) {
-            logger.error("Error searching products by title '{}': {}", title, e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

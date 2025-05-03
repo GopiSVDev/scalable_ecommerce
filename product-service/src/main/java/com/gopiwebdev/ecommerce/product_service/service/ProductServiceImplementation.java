@@ -5,6 +5,7 @@ import com.gopiwebdev.ecommerce.product_service.entity.Product;
 import com.gopiwebdev.ecommerce.product_service.exception.ProductNotFoundException;
 import com.gopiwebdev.ecommerce.product_service.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImplementation implements ProductService {
@@ -40,6 +40,7 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
+    @Cacheable("products")
     public ProductDTO getProductById(Long id) {
         Optional<Product> optionalProduct = repository.findById(id);
 
