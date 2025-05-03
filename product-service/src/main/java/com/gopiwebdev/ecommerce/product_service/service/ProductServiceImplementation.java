@@ -6,6 +6,7 @@ import com.gopiwebdev.ecommerce.product_service.entity.Product;
 import com.gopiwebdev.ecommerce.product_service.exception.ProductNotFoundException;
 import com.gopiwebdev.ecommerce.product_service.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +40,7 @@ public class ProductServiceImplementation implements ProductService {
         return new ProductDTO(savedProduct);
     }
 
+    @CachePut(value = "products", key = "#id")
     @Override
     public ProductDTO updateProduct(Long id, UpdateProductDTO dto) {
         Product product = repository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
@@ -53,7 +55,9 @@ public class ProductServiceImplementation implements ProductService {
         if (dto.getDiscountPercentage() != null) product.setDiscountPercentage(dto.getDiscountPercentage());
         if (dto.getImages() != null) product.setImages(dto.getImages());
 
-        return new ProductDTO(repository.save(product));
+        Product updated = repository.save(product);
+
+        return new ProductDTO(updated);
     }
 
     @Override
