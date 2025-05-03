@@ -6,6 +6,7 @@ import com.gopiwebdev.ecommerce.product_service.entity.Product;
 import com.gopiwebdev.ecommerce.product_service.exception.ProductNotFoundException;
 import com.gopiwebdev.ecommerce.product_service.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -100,4 +101,11 @@ public class ProductServiceImplementation implements ProductService {
                 .toList();
     }
 
+    @Override
+    @CacheEvict(value = "products", key = "#id")
+    public void deleteProduct(Long id) {
+        Product product = repository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product Not Found"));
+
+        repository.delete(product);
+    }
 }

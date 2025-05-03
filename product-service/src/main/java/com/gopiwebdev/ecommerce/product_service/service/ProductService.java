@@ -18,4 +18,6 @@ public interface ProductService {
     Page<ProductDTO> searchProductsByTitle(String title, int page, int size);
 
     List<ProductDTO> getAll();
+
+    void deleteProduct(Long id);
 }

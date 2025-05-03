@@ -6,7 +6,6 @@ import com.gopiwebdev.ecommerce.product_service.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +20,6 @@ public class ProductController {
     private ProductService productService;
 
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
-
-    @Value("${server.port}")
-    private int serverPort;
 
     @PostMapping("/create")
     public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO dto) {
@@ -47,14 +43,12 @@ public class ProductController {
             return new ResponseEntity<>(updated, HttpStatus.CREATED);
         } catch (Exception e) {
             logger.error("Error updating product: {}", e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
-        logger.info("Request handled by instance: {}", serverPort);
-
         try {
             ProductDTO product = productService.getProductById(id);
             return ResponseEntity.ok(product);
@@ -96,5 +90,15 @@ public class ProductController {
     @GetMapping("/all")
     public ResponseEntity<List<ProductDTO>> getAll() {
         return ResponseEntity.ok(productService.getAll());
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteProduct(@PathVariable("id") Long id) {
+        try {
+            productService.deleteProduct(id);
+            return ResponseEntity.ok("Product Deleted");
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed To Delete", HttpStatus.NOT_FOUND);
+        }
     }
 }
