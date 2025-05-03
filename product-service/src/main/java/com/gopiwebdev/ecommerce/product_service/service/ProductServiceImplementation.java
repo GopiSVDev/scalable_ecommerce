@@ -1,6 +1,7 @@
 package com.gopiwebdev.ecommerce.product_service.service;
 
 import com.gopiwebdev.ecommerce.product_service.dto.ProductDTO;
+import com.gopiwebdev.ecommerce.product_service.dto.UpdateProductDTO;
 import com.gopiwebdev.ecommerce.product_service.entity.Product;
 import com.gopiwebdev.ecommerce.product_service.exception.ProductNotFoundException;
 import com.gopiwebdev.ecommerce.product_service.repository.ProductRepository;
@@ -10,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +22,7 @@ public class ProductServiceImplementation implements ProductService {
     ProductRepository repository;
 
     @Override
-    public ProductDTO createProduct(@RequestBody ProductDTO productRequestDto) {
+    public ProductDTO createProduct(ProductDTO productRequestDto) {
         Product product = new Product(
                 productRequestDto.getTitle(),
                 productRequestDto.getPrice(),
@@ -40,6 +40,23 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
+    public ProductDTO updateProduct(Long id, UpdateProductDTO dto) {
+        Product product = repository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
+
+        if (dto.getTitle() != null) product.setTitle(dto.getTitle());
+        if (dto.getDescription() != null) product.setDescription(dto.getDescription());
+        if (dto.getPrice() != null) product.setPrice(dto.getPrice());
+        if (dto.getQuantity() != null) product.setQuantity(dto.getQuantity());
+        if (dto.getCategory() != null) product.setCategory(dto.getCategory());
+        if (dto.getThumbnail() != null) product.setThumbnail(dto.getThumbnail());
+        if (dto.getRating() != null) product.setRating(dto.getRating());
+        if (dto.getDiscountPercentage() != null) product.setDiscountPercentage(dto.getDiscountPercentage());
+        if (dto.getImages() != null) product.setImages(dto.getImages());
+
+        return new ProductDTO(repository.save(product));
+    }
+
+    @Override
     @Cacheable("products")
     public ProductDTO getProductById(Long id) {
         Optional<Product> optionalProduct = repository.findById(id);
@@ -53,6 +70,7 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
+    @Cacheable("products")
     public Page<ProductDTO> getProductsByCategory(String category, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = repository.findByCategory(category, pageable);
@@ -61,12 +79,15 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
+    @Cacheable("products")
     public Page<ProductDTO> searchProductsByTitle(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = repository.findByTitleContaining(title, pageable);
         return productPage.map(ProductDTO::new);
     }
 
+    @Cacheable("products")
+    @Override
     public List<ProductDTO> getAll() {
         List<Product> products = repository.findAll();
 
@@ -74,4 +95,5 @@ public class ProductServiceImplementation implements ProductService {
                 .map(ProductDTO::new)
                 .toList();
     }
+
 }

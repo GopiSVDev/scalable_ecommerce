@@ -1,6 +1,7 @@
 package com.gopiwebdev.ecommerce.product_service.controller;
 
 import com.gopiwebdev.ecommerce.product_service.dto.ProductDTO;
+import com.gopiwebdev.ecommerce.product_service.dto.UpdateProductDTO;
 import com.gopiwebdev.ecommerce.product_service.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,19 @@ public class ProductController {
             return new ResponseEntity<>(created, HttpStatus.CREATED);
         } catch (Exception e) {
             logger.error("Error creating product: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody UpdateProductDTO dto) {
+        logger.info("Received request to update product: {}", dto);
+        try {
+            ProductDTO updated = productService.updateProduct(id, dto);
+            logger.info("Product updated successfully: {}", updated);
+            return new ResponseEntity<>(updated, HttpStatus.CREATED);
+        } catch (Exception e) {
+            logger.error("Error updating product: {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
