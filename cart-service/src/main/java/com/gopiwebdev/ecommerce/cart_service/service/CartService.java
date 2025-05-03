@@ -6,7 +6,9 @@ import com.gopiwebdev.ecommerce.cart_service.dto.CartProductDTO;
 import com.gopiwebdev.ecommerce.cart_service.entity.CartItem;
 import com.gopiwebdev.ecommerce.cart_service.entity.ProductDTO;
 import com.gopiwebdev.ecommerce.cart_service.exception.CartItemNotFoundException;
+import com.gopiwebdev.ecommerce.cart_service.exception.ProductNotFoundException;
 import com.gopiwebdev.ecommerce.cart_service.repository.CartRepository;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,15 @@ public class CartService {
     private CartRepository repository;
 
     public CartItem addItemToCart(Long userId, Long productId, int quantity) {
+
+        try {
+            productClient.getProductById(productId);
+        } catch (FeignException.NotFound ex) {
+            throw new ProductNotFoundException(productId);
+        } catch (FeignException ex) {
+            throw new RuntimeException("Error communicating with product service: " + ex.getMessage());
+        }
+
         CartItem existingItem = repository.findByUserIdAndProductId(userId, productId);
 
         if (existingItem != null) {

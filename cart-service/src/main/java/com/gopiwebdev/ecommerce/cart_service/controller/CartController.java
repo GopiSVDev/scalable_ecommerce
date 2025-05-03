@@ -3,6 +3,7 @@ package com.gopiwebdev.ecommerce.cart_service.controller;
 import com.gopiwebdev.ecommerce.cart_service.dto.CartItemResponse;
 import com.gopiwebdev.ecommerce.cart_service.entity.CartItem;
 import com.gopiwebdev.ecommerce.cart_service.exception.CartItemNotFoundException;
+import com.gopiwebdev.ecommerce.cart_service.exception.ProductNotFoundException;
 import com.gopiwebdev.ecommerce.cart_service.service.CartService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -23,16 +26,24 @@ public class CartController {
     private static final Logger logger = LoggerFactory.getLogger(CartController.class);
 
     @PostMapping("/add")
-    public ResponseEntity<CartItem> addItemToCart(@RequestParam Long userId, @RequestParam Long productId, @RequestParam int quantity) {
+    public ResponseEntity<?> addItemToCart(@RequestParam Long userId, @RequestParam Long productId, @RequestParam int quantity) {
         logger.info("Received request to add item to cart. UserId: {}, ProductId: {}, Quantity: {}", userId, productId, quantity);
 
         try {
             CartItem item = cartService.addItemToCart(userId, productId, quantity);
             logger.info("Item added to cart successfully: {}", item);
             return new ResponseEntity<>(item, HttpStatus.CREATED);
+        } catch (ProductNotFoundException e) {
+            logger.warn("Product not found: {}", e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            logger.error("Error adding item to cart. UserId: {}, ProductId: {}, Quantity: {}. Error: {}", userId, productId, quantity, e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("Error adding item to cart. UserId: {}, ProductId: {}, Quantity: {}. Error: {}",
+                    userId, productId, quantity, e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Internal server error: " + e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

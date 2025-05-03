@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImplementation implements ProductService {
@@ -63,5 +64,13 @@ public class ProductServiceImplementation implements ProductService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = repository.findByTitleContaining(title, pageable);
         return productPage.map(ProductDTO::new);
+    }
+
+    public List<ProductDTO> getAll() {
+        List<Product> products = repository.findAll();
+
+        return products.stream()
+                .map(ProductDTO::new)
+                .toList();
     }
 }

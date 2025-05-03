@@ -13,4 +13,6 @@ public interface ProductService {
     Page<ProductDTO> getProductsByCategory(String category, int page, int size);
 
     Page<ProductDTO> searchProductsByTitle(String title, int page, int size);
+
+    List<ProductDTO> getAll();
 }

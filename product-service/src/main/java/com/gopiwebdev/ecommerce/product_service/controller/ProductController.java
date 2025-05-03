@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -76,5 +78,10 @@ public class ProductController {
             logger.error("Error searching products by title '{}': {}", title, e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<ProductDTO>> getAll() {
+        return ResponseEntity.ok(productService.getAll());
     }
 }
