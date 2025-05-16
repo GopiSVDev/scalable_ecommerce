@@ -41,8 +41,8 @@ public class ProductServiceImplementation implements ProductService {
         return new ProductDTO(savedProduct);
     }
 
-    @CachePut(value = "products", key = "#id")
     @Override
+    @CachePut(value = "products", key = "#id")
     public ProductDTO updateProduct(Long id, UpdateProductDTO dto) {
         Product product = repository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
 
@@ -62,7 +62,7 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
-    @Cacheable("products")
+    @Cacheable(value = "products", key = "#id")
     public ProductDTO getProductById(Long id) {
         Optional<Product> optionalProduct = repository.findById(id);
 
@@ -75,7 +75,7 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
-    @Cacheable("products")
+    @Cacheable(value = "products", key = "#id")
     public Page<ProductDTO> getProductsByCategory(String category, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = repository.findByCategory(category, pageable);
@@ -84,18 +84,18 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
-    @Cacheable("products")
+    @Cacheable(value = "products")
     public Page<ProductDTO> searchProductsByTitle(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = repository.findByTitleContaining(title, pageable);
         return productPage.map(ProductDTO::new);
     }
 
-    @Cacheable("products")
     @Override
+    @Cacheable(value = "products")
     public List<ProductDTO> getAll() {
         List<Product> products = repository.findAll();
-
+        System.out.println("Fetching from DB");
         return products.stream()
                 .map(ProductDTO::new)
                 .toList();
