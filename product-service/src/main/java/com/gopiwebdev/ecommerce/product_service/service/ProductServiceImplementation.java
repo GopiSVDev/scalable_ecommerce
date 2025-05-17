@@ -75,7 +75,7 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
-    @Cacheable(value = "products", key = "#id")
+    @Cacheable(value = "products", key = "#category + '_' + #page + '_' + #size")
     public Page<ProductDTO> getProductsByCategory(String category, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = repository.findByCategory(category, pageable);
@@ -84,7 +84,7 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
-    @Cacheable(value = "products")
+    @Cacheable(value = "products", key = "#title + '_' + #page + '_' + #size")
     public Page<ProductDTO> searchProductsByTitle(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = repository.findByTitleContaining(title, pageable);
@@ -92,7 +92,7 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
-    @Cacheable(value = "products")
+    @Cacheable(value = "products", key = "'allProducts'")
     public List<ProductDTO> getAll() {
         List<Product> products = repository.findAll();
         System.out.println("Fetching from DB");
