@@ -41,9 +41,15 @@ Each service registers with **Eureka**, and all requests are routed via the **AP
 - Update Quantity
 - Clear Cart
 
+### ✅ Caching
+
+- The Product Service leverages Redis caching to speed up frequent data retrieval and reduce database calls.
+- Cached data includes product details, product lists, and search results to improve performance.
+
 ### ✅ Infrastructure
 - API Gateway for routing and JWT filtering
 - Eureka Server for service discovery
+- Redis for distributed caching to improve performance and reduce DB load
 - PostgreSQL for persistent storage (each service uses its own database)
 - JWT-based authentication
 
@@ -102,6 +108,7 @@ After logging in via `/api/user/login`, include the returned token in the `Autho
   - API Gateway
   - Eureka Server
   - PostgreSQL databases
+  - Redis cache server for improved performance
 
 ---
 
